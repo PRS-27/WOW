@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 2px;
+    margin: 20px auto;
+  }
+  .cell {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .cell:hover {
+    background-color: #e0e0e0;
+  }
+  #message {
+    font-size: 1.5em;
+    margin-top: 20px;
+  }
+  #scoreboard {
+    margin-top: 20px;
+  }
+  button {
+    font-size: 1em;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+<div class="board" id="board">
+  <div class="cell" onclick="placeMarker(0)"></div>
+  <div class="cell" onclick="placeMarker(1)"></div>
+  <div class="cell" onclick="placeMarker(2)"></div>
+  <div class="cell" onclick="placeMarker(3)"></div>
+  <div class="cell" onclick="placeMarker(4)"></div>
+  <div class="cell" onclick="placeMarker(5)"></div>
+  <div class="cell" onclick="placeMarker(6)"></div>
+  <div class="cell" onclick="placeMarker(7)"></div>
+  <div class="cell" onclick="placeMarker(8)"></div>
+</div>
+<div id="message">Player X's turn</div>
+<div id="scoreboard">
+  <div id="playerXScore">Player X: 0</div>
+  <div id="playerOScore">Player O: 0</div>
+</div>
+<button onclick="resetGame()">Restart Game</button>
+
+<script>
+let currentPlayer = 'X';
+let board = ['', '', '', '', '', '', '', '', ''];
+let gameActive = true;
+let moves = 0;
+let playerXScore = 0;
+let playerOScore = 0;
+
+const winningCombinations = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
+
+const cells = document.querySelectorAll('.cell');
+const message = document.getElementById('message');
+const playerXScoreDisplay = document.getElementById('playerXScore');
+const playerOScoreDisplay = document.getElementById('playerOScore');
+
+function placeMarker(cellIndex) {
+  if (!gameActive || board[cellIndex] !== '') return;
+  
+  board[cellIndex] = currentPlayer;
+  cells[cellIndex].textContent = currentPlayer;
+  moves++;
+
+  if (checkWin()) {
+    endGame(false);
+  } else if (moves === 9) {
+    endGame(true);
+  } else {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    message.textContent = `Player ${currentPlayer}'s turn`;
+  }
+}
+
+function checkWin() {
+  for (let combo of winningCombinations) {
+    if (
+      board[combo[0]] !== '' &&
+      board[combo[0]] === board[combo[1]] &&
+      board[combo[1]] === board[combo[2]]
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function endGame(isDraw) {
+  gameActive = false;
+  if (isDraw) {
+    message.textContent = 'Draw! Restart the game.';
+  } else {
+    message.textContent = `Player ${currentPlayer} wins!`;
+    updateScore(currentPlayer);
+  }
+}
+
+function updateScore(player) {
+  if (player === 'X') {
+    playerXScore++;
+    playerXScoreDisplay.textContent = `Player X: ${playerXScore}`;
+  } else {
+    playerOScore++;
+    playerOScoreDisplay.textContent = `Player O: ${playerOScore}`;
+  }
+}
+
+function resetGame() {
+  currentPlayer = 'X';
+  board = ['', '', '', '', '', '', '', '', ''];
+  gameActive = true;
+  moves = 0;
+  message.textContent = `Player ${currentPlayer}'s turn`;
+  cells.forEach(cell => cell.textContent = '');
+}
+</script>
+</body>
+</html>
